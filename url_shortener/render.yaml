@@ -1,0 +1,29 @@
+services:
+  # A PostgreSQL database
+  - type: pserv
+    name: url-shortener-db
+    plan: free
+    databaseName: url_shortener
+    user: url_shortener_user
+    ipAllowList: [] # Allow all
+
+  # The Spring Boot application
+  - type: web
+    name: url-shortener-app
+    plan: free
+    runtime: docker
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /actuator/health # You may need to add the actuator dependency for this
+    envVars:
+      - key: DB_URL
+        fromDatabase:
+          name: url-shortener-db
+          property: connectionString
+      - key: DB_USER
+        fromDatabase:
+          name: url-shortener-db
+          property: user
+      - key: DB_PASSWORD
+        fromDatabase:
+          name: url-shortener-db
+          property: password
